@@ -1,0 +1,8 @@
+flask
+simpy
+progressbar
+numpy
+matplotlib
+seaborn
+pandas
+gunicorn
