@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block packetGenerator %}
+    <body>
+        <section class="user-input">
+            <div class="container container-user-input" id="dynamic">
+                <div class="row main-row" id="main-row-pg">
+                <h1 class="heading">
+                    <span class="c1795"><b>Packet Generator</b></span>
+                </h1>
+                <div class="row" id="inner-row-pg-1">
+                    <div class="col">
+                        <form class="form">
+                            <label class="label">Name</label>
+                            <div class="form-group">
+                                <input placeholder="Type here pg's name..." class="input"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <form class="form">
+                            <label class="label">Packets to Create</label>
+                            <div class="form-group">
+                                <input placeholder="Enter Packet Number..." class="input"/>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col">
+                        <form class="form">
+                            <label class="label">Arrival Rate</label>
+                            <div class="form-group">
+                                <select id="arrival-rate-combobox" class="Select-ArrivalRate" onchange="onChange(this, this.nextElementSibling.id)">
+                                    <option value="0">- Select option -</option>
+                                    <option value="1">Poisson</option>
+                                    <option value="2">Exponential</option>
+                                </select>
+                                <input id="arrival-rate-input1" type="text" name="other" class="input arrivalRate" style="display: None; width: 50px">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                </div>
+                <div class="row">
+                    <div class="col" id="addPg">
+                        <button onclick="addPg()" class="button" id="addPg">Add Packet Generator</button>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="row main-row" id="main-row-node">
+                <h1 class="heading">
+                  <span class="c1795"><b>Node</b></span>
+                </h1>
+                <div class="row" id="inner-row-node-1">
+                  <div class="col">
+                    <form class="form">
+                        <label class="label">Name</label>
+                        <div class="form-group">
+                            <input placeholder="Type here node's name..." class="input"/>
+                        </div>
+                    </form>
+                  </div>
+                  <div class="col">
+                        <form class="form">
+                            <label class="label">Buffer Size</label>
+                            <div class="form-group">
+                                <input placeholder="Enter Buffer Size..." class="input"/>
+                            </div>
+                        </form>
+                  </div>
+                    <div class="col">
+                        <form class="form">
+                            <label class="label">Transmission Rate</label>
+                            <div class="form-group">
+                                <input placeholder="Enter Transmission Rate..." id="transmission-rate-input" type="text" name="other" class="input transmissionRate"">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                </div>
+
+                <div class="row">
+                    <div class="col" id="addNode">
+                        <button onclick="addNode()" class="button" id="addNode">Add Node</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </body>
+
+{% endblock %}
