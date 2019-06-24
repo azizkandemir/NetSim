@@ -5,50 +5,504 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>NetSim</title>
-        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+        <link rel="stylesheet" type="text/css" href="/static/css/switch.css">
 
     </head>
     {% block packetGenerator %}{% endblock %}
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="//cdn.jsdelivr.net/script.js/0.1/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"></script>
+
+{##}
+{#    <script>#}
+{#        function onChange(combobox, id) {#}
+{#            var input = document.getElementById(id);#}
+{#            #}
+{#            if (combobox.value !== "0"){#}
+{#                input.style.display='inline';#}
+{#            }#}
+{#            else {#}
+{#                input.style.display='none';#}
+{#                input.value = "";#}
+{#            }#}
+{#        }#}
+{#    </script>#}
 
     <script>
         function onChange(combobox, id) {
             var input = document.getElementById(id);
+            var input2 = document.getElementById(input.nextElementSibling.id);
+
             if (combobox.value !== "0"){
-                input.style.display='inline';
+                if (combobox.value === "Uniform") {
+                    input.placeholder = 'min';
+                    input.style.display='inline';
+                    input2.style.display='inline';
+                }
+                else {
+                    input.placeholder = '';
+                    input.style.display='inline';
+                    input2.style.display='none';
+
+                }
             }
             else {
                 input.style.display='none';
+                input2.style.display='none';
+                input.value = "";
+                input2.value = "";
+            }
+        }
+
+    </script>
+    <script>
+        var counterPg = 1;
+        var activePg = 1;
+        var creation_order = 1;
+
+        function addPg(componentName){
+            counterPg++;
+            activePg++;
+            var objNewDiv = document.createElement('div');
+            objNewDiv.setAttribute('class', 'row');
+            objNewDiv.setAttribute('id', 'inner-row-pg-' + counterPg);
+            objNewDiv.setAttribute('selector', '' + counterPg);
+
+            {#objNewDiv.innerHTML = '<div class="col"> <form class="form"> <label class="label">Name</label> <div class="form-group"> <input placeholder="Type here pg name..." class="input"/> </div> </form> </div> <div class="col"> <form class="form"> <label class="label">Packets to Create</label> <div class="form-group"> <input placeholder="Type here your name" class="input"/> </div> </form> </div> <div class="col"> <form class="form"> <label class="label">Arrival Rate</label> <div class="form-group"> <select id="arrival-rate-combobox" class="Select-ArrivalRate" onchange="onChange(this, this.nextElementSibling.id)"> <option value="0">- Select option -</option> <option value="1">Poisson</option> <option value="2">Exponential</option> </select> <input id="arrival-rate-input' + counter + '" type="text" name="other" class="input arrivalRate" style="display: None; width: 50px"/> </div> </form> </div> <div class="col" style="top: 30px; left:17px"> <button class="deleteRow" onclick="deleteRowOnClick(this)"><i class="fa fa-trash"></i></button> </div>';#}
+            objNewDiv.innerHTML = '<form id="pg-form-' + counterPg + '" class="formPg" action=""> <div class="col"> <label class="label">Name</label> <div class="form-group"> <input placeholder="Type here pg\'s name..." id="pg-nameInput-' + counterPg + '" class="input"/> </div> </div> <div class="col"> <label class="label">Packets to Create</label> <div class="form-group"> <input placeholder="Type here your name" id="pg-packetInput-' + counterPg + '" class="input"/> </div> </div> <div class="col"> <label class="label">Arrival Rate</label> <div class="form-group"> <select id="arrival-rate-combobox-' + counterPg + '" class="Select-ArrivalRate" onchange="onChange(this, this.nextElementSibling.id)"> <option value="0">- Select option -</option> <option value="Poisson">Poisson</option> <option value="Exponential">Exponential</option> <option value="Uniform">Uniform</option> </select> <input id="arrival-rate-input-' + counterPg + '" type="text" class="input arrivalRate" style="display: None; width: 50px"> <input placeholder="max" id="arrival-max-rate-input-' + counterPg + '" type="text" name="other" class="input arrivalRate" style="display: None; width: 50px"> </div> </div> <div class="col"> <label class="label">Packet Size</label> <div class="form-group"> <select id="packet-size-combobox-'+ counterPg + '" class="Select-PacketSize" onchange="onChange(this, this.nextElementSibling.id)"> <option value="0">- Select option -</option> <option value="Uniform">Uniform</option> <option value="Pareto">Pareto</option> <option value="Log-Normal">Log-Normal</option> </select> <input id="packet-size-input-' + counterPg + '" type="text" name="other" class="input packetSize" style="display: None; width: 50px"> <input placeholder="max" id="packet-max-size-input-' + counterPg + '" type="text" name="other" class="input packetSize" style="display: None; width: 50px"> </div> </div> <div class="col" style="top: 30px; left:17px"> <button class="deleteRow" onclick="deletePgRowOnClick(this)"><i class="fa fa-trash"></i></button> </div> </form>';
+            document.getElementById('main-row-pg').appendChild(objNewDiv);
+            var oldElem = document.getElementById('addPgForm');
+            oldElem.setAttribute('form', 'pg-form-' + counterPg);
+
+            var selectElements = document.getElementsByClassName('selectComponent');
+
+            for ( var i = 0; i < selectElements.length; i++) {
+                selectElements[i].options[selectElements[i].options.length] = new Option(componentName, componentName);
+            }
+            creation_order ++;
+
+        }
+    </script>
+
+    <script>
+        var counterNode = 1;
+        var activeNode = 1;
+        function addNode(componentName, selectedOptionName){
+            counterNode++;
+            activeNode++;
+            var objNewDiv = document.createElement('div');
+            objNewDiv.setAttribute('id', 'inner-row-node-' + counterNode);
+            objNewDiv.setAttribute('class', 'row');
+            objNewDiv.setAttribute('selector', '' + counterNode);
+            objNewDiv.innerHTML = '<form id="node-form' + counterNode + '" class="formNode" action="" > <div class="col"> <label class="label">Name</label> <div class="form-group"> <input placeholder="Type here node\'s name..." id="node-nameInput-' + counterNode + '" class="input"/> </div> </div> <div class="col"> <label class="label">Buffer Size</label> <div class="form-group"> <input placeholder="Enter Buffer Size..." id="node-bufferInput-' + counterNode + '" class="input"/> </div> </div> <div class="col"> <label class="label">Transmission Rate</label> <div class="form-group"> <input placeholder="Enter Transmission Rate..." id="transmission-rate-input-' + counterNode + '" type="text" class="input transmissionRate"> </div> </div> <div class="col"> <label class="label">Source</label> <div class="form-group"> <select id="select-node-source-' + counterNode + '" class="selectComponent"> <option value="0" >- Select Source -</option> </select> </div> </div> <div class="col" style="top: 30px"> <button class="deleteRow" onclick="deleteNodeRowOnClick(this)"><i class="fa fa-trash"></i></button> </div> </form>';
+            document.getElementById('main-row-node').appendChild(objNewDiv);
+            var oldElem = document.getElementById('addNodeForm');
+            oldElem.setAttribute('form', 'node-form-' + counterNode);
+
+            cloneSourceOptions(selectedOptionName);
+
+            var selectElements = document.getElementsByClassName('selectComponent');
+
+            for ( var i = 0; i < selectElements.length; i++) {
+                selectElements[i].options[selectElements[i].options.length] = new Option(componentName, componentName);
+            }
+
+            creation_order ++;
+        }
+    </script>
+
+    <script>
+        var counterMonitor = 1;
+        var activeMonitor = 1;
+        function addMonitor(selectedOptionName){
+            counterMonitor++;
+            activeMonitor++;
+            var objNewDiv = document.createElement('div');
+            objNewDiv.setAttribute('id', 'inner-row-monitor-' + counterMonitor);
+            objNewDiv.setAttribute('class', 'row');
+            objNewDiv.setAttribute('selector', '' + counterMonitor);
+
+            objNewDiv.innerHTML = '<form id="monitor-form-' + counterMonitor + '" class="formMonitor" action="" > <div class="col monitor-col"> <label class="label">Name</label> <div class="form-group"> <input placeholder="Type here monitor\'s name..." id="monitor-nameInput-' + counterMonitor + '" class="input"/> </div> </div> <div class="col monitor-col"> <label class="label">Component to Monitor</label> <div class="form-group"> <select id="select-component-combobox-' + counterMonitor + '" class="selectComponent"> <option value="0">- Select Component -</option> </select> </div> </div> <div class="col monitor-col"> <label class="label">Record Arrival</label> <div class="form-group"> <label class="switch"> <input type="checkbox" id="arrival-record-' + counterMonitor + '" class="togBtn" value="False"> <div class="slider round"> <span class="on">ON</span> <span class="off">OFF</span> </div> </label> </div> </div> <div class="col monitor-col"> <label class="label">Record Packet Waiting</label> <div class="form-group"> <label class="switch"> <input type="checkbox" id="waiting-record-' + counterMonitor + '" class="togBtn" value="False"> <div class="slider round"> <span class="on">ON</span> <span class="off">OFF</span> </div> </label> </div> </div> <div class="col monitor-col"> <label class="label" style="padding-left: 7px">Debug</label> <div class="form-group"> <label class="switch"> <input type="checkbox" id="monitor-debug-' + counterMonitor + '" class="togBtn" value="False"> <div class="slider round"> <span class="on">ON</span> <span class="off">OFF</span> </div> </label> </div> </div> <div class="col monitor-col" style="top: 30px;"> <button class="deleteRow" onclick="deleteMonitorRowOnClick(this)"><i class="fa fa-trash"></i></button> </div> </form>';
+            document.getElementById('main-row-monitor').appendChild(objNewDiv);
+            var oldElem = document.getElementById('addMonitorForm');
+            oldElem.setAttribute('form', 'monitor-form-' + counterMonitor);
+
+            cloneOptions(selectedOptionName);
+        }
+    </script>
+
+    <script>
+        function cloneOptions(selectedName) {
+            var myCounter = counterMonitor - 1;
+            var selectCompCombobox = 'select-component-combobox-' + myCounter;
+            var $options = $("#" + selectCompCombobox + " > option").clone();
+            var mySelectElem = $("#select-component-combobox-" + counterMonitor);
+            mySelectElem.append($options.slice(1,));
+
+            for ( var i = 0; i < mySelectElem[0].options.length; i++ ) {
+                if (selectedName === mySelectElem[0].options[i].text) {
+                    mySelectElem[0].options[i].setAttribute("disabled", "disabled");
+                }
+            }
+        }
+
+    </script>
+
+    <script>
+        function cloneSourceOptions(selectedName) {
+            {#var myCounter = counterNode - 1;#}
+            {#var selectCompCombobox = 'select-node-source-' + myCounter;#}
+            var $options = $("#select-node-source-1 > option").clone();
+            {#var $options = $("#select-node-source-1 > option").clone();#}
+            var mySelectElem = $("#select-node-source-" + counterNode);
+
+            mySelectElem.append($options.slice(1,));
+
+            for ( var i = 0; i < mySelectElem[0].options.length; i++ ) {
+                if (selectedName === mySelectElem[0].options[i].text) {
+                    mySelectElem[0].options[i].setAttribute("disabled", "disabled");
+                }
+            }
+
+        }
+    </script>
+
+    <script>
+        function deletePgRowOnClick(elem){
+            if (activePg !== 1) {
+                activePg --;
+                var tmpSelector = $(elem).parent().parent().parent().get(0).attributes[2].value;
+                var tmpElement = $(elem).parent().parent().parent();
+
+                deleteAll("packetGenerator", tmpElement, tmpSelector);
+                counterPg --;
+
+            }
+            else {
+                window.alert("Cannot remove the only component");
+                event.preventDefault();
             }
         }
     </script>
-    <script>
-        var counter = 1;
 
-        function addPg(){
-            counter++;
-            var objNewDiv = document.createElement('div');
-            objNewDiv.setAttribute('id', 'inner-row-pg-' + counter);
-            objNewDiv.setAttribute('class', 'row');
-            objNewDiv.innerHTML = '<div class="col"> <form class="form"> <label class="label">Name</label> <div class="form-group"> <input placeholder="Type here your name" class="input"/> </div> </form> </div> <div class="col"> <form class="form"> <label class="label">Packets to Create</label> <div class="form-group"> <input placeholder="Type here your name" class="input"/> </div> </form> </div> <div class="col"> <form class="form"> <label class="label">Arrival Rate</label> <div class="form-group"> <select id="arrival-rate-combobox" class="Select-ArrivalRate" onchange="onChange(this, this.nextElementSibling.id)"> <option value="0">- Select option -</option> <option value="1">Poisson</option> <option value="2">Exponential</option> </select> <input id="arrival-rate-input' + counter + '" type="text" name="other" class="input arrivalRate" style="display: None; width: 50px"/> </div> </form> </div>';
-            document.getElementById('main-row-pg').appendChild(objNewDiv);
+    <script>
+        function deleteNodeRowOnClick(elem){
+            if (activeNode !== 1) {
+                var tmpSelector = $(elem).parent().parent().parent().get(0).attributes[2].value;
+                var tmpElement = $(elem).parent().parent().parent();
+
+                deleteAll("node", tmpElement, tmpSelector);
+                {#counterNode --;#}
+
+            }
+            else {
+                window.alert("Cannot remove the only component");
+                event.preventDefault();
+            }
         }
     </script>
 
     <script>
-        var counter = 1;
+        function deleteMonitorRowOnClick(elem){
+            if (activeMonitor !== 1) {
+                var tmpSelector = $(elem).parent().parent().parent().get(0).attributes[2].value;
+                var tmpElement = $(elem).parent().parent().parent();
 
-        function addNode(){
-            counter++;
-            var objNewDiv = document.createElement('div');
-            objNewDiv.setAttribute('id', 'inner-row-node-' + counter);
-            objNewDiv.setAttribute('class', 'row');
-            objNewDiv.innerHTML = '<div class="col"> <form class="form"> <label class="label">Name</label> <div class="form-group"> <input placeholder="Type here node\'s name..." class="input"/> </div> </form> </div> <div class="col"> <form class="form"> <label class="label">Buffer Size</label> <div class="form-group"> <input placeholder="Enter Buffer Size..." class="input"/> </div> </form> </div> <div class="col"> <form class="form"> <label class="label">Transmission Rate</label> <div class="form-group"> <input placeholder="Enter Transmission Rate..." id="transmission-rate-input" type="text" name="other" class="input transmissionRate""> </div> </form> </div>';
-            document.getElementById('main-row-node').appendChild(objNewDiv);
+                deleteAll("monitor", tmpElement, tmpSelector);
+                {#counterMonitor --;#}
+
+            }
+            else {
+                window.alert("Cannot remove the only component");
+                event.preventDefault();
+            }
         }
+    </script>
+
+
+
+    <script>
+        $(document).ready(function () {
+
+            $('#addPgForm').on('click', function (event) {
+                $.ajax({
+                    data : {
+                        component: "packetGenerator",
+                        name: $('#pg-nameInput-' + counterPg).val(),
+                        creation_order: creation_order,
+                        packetNum: $("#pg-packetInput-" + counterPg).val(),
+                        arrivalType: $('#arrival-rate-combobox-' + counterPg).find(":selected").text(),
+                        arrivalRate: $('#arrival-rate-input-' + counterPg).val(),
+                        arrivalRateMax: $('#arrival-max-rate-input-' + counterPg).val(),
+                        sizeType: $('#packet-size-combobox-' + counterPg).find(":selected").text(),
+                        sizeRate: $('#packet-size-input-' + counterPg).val(),
+                        sizeRateMax: $('#packet-max-size-input-' + counterPg).val()
+                    },
+                    type : 'POST',
+                    url : '/'
+                }).done(function (data) {
+                    if (data.error) {
+                        window.alert(data.error);
+                    }
+                    else {
+                        var currentPg = data[counterPg-1];
+                        addPg(currentPg.name);
+                    }
+                });
+                event.preventDefault();
+
+            });
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#addNodeForm').on('click', function (event) {
+                $.ajax({
+                    data : {
+                        component: "Node",
+                        name: $('#node-nameInput-' + counterNode).val(),
+                        creation_order: creation_order,
+                        bufferSize: $("#node-bufferInput-" + counterNode).val(),
+                        transmissionRate: $('#transmission-rate-input-' + counterNode).val(),
+                        source: $('#select-node-source-' + counterNode).find(":selected").text()
+                    },
+                    type : 'POST',
+                    url : '/'
+                }).done(function (data) {
+
+                    if (data.error) {
+                        window.alert(data.error);
+                    }
+                    else {
+                        var currentNode = data[counterNode-1];
+
+                        addNode(currentNode.name, currentNode.source);
+                    }
+                });
+                event.preventDefault();
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            $('#addMonitorForm').on('click', function (event) {
+                $.ajax({
+                    data : {
+                        component: "Monitor",
+                        name: $('#monitor-nameInput-' + counterMonitor).val(),
+                        componentToMonitor: $('#select-component-combobox-' + counterMonitor).find(":selected").text(),
+                        recordArrival: $("#arrival-record-" + counterMonitor).val(),
+                        recordWaiting: $('#waiting-record-' + counterMonitor).val(),
+                        debug: $('#monitor-debug-' + counterMonitor).val()
+                    },
+                    type : 'POST',
+                    url : '/'
+                }).done(function (data) {
+                    if (data.error) {
+                        window.alert(data.error);
+                    }
+                    else {
+                        var currentMonitor = data[counterMonitor-1];
+                        addMonitor(currentMonitor.componentToMonitor);
+                    }
+                });
+                event.preventDefault();
+            });
+        });
+    </script>
+
+    <script>
+        $(document).on('change', 'input:checkbox',function() {
+            if ($(this).is(':checked')) {
+                $(this).attr('value', 'True');
+            } else {
+                $(this).attr('value', 'False');
+            }
+         });
+    </script>
+
+    <script>
+        function deleteAll(component, element, selector) {
+            $.ajax({
+                    data : {
+                        component: component,
+                        selector: selector
+                    },
+                    type : 'POST',
+                    url : '/info'
+                }).done(function (data) {
+                    if (! data.pass) {
+                        window.alert(data.name + ' ' + data.msg);
+                        var selectElements = document.getElementsByClassName('selectComponent');
+                        for ( var i = 0; i < selectElements.length; i++) {
+                            for (var k = 0; k < selectElements[i].options.length; k++) {
+                                if (selectElements[i].options[k+1].text === data.name) {
+                                    selectElements[i].options[k+1] = null;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        window.alert("SOMETHING WRONG!")
+                    }
+                });
+
+            element.remove();
+        }
+    </script>
+
+    <script>
+        function runSim() {
+            $.ajax({
+                    type : 'POST',
+                    url : '/run-sim'
+                }).done(function (data) {
+
+                    var objNewDiv = document.createElement('div');
+                    objNewDiv.innerHTML = '<div class="row"> </div> <div class="col"> <p> '+ data.nodes[0]['name'] +' </p> </div> </div>';
+                    $("#simulation-result").append(objNewDiv);
+
+            });
+
+
+            {#$("#result-section").show();#}
+            $("#simulation-result").show();
+            scrollTo('#simulation-result');
+
+        }
+    </script>
+
+    <script>
+        function scrollTo(div) {
+            var timer = setTimeout(function () {
+                $('html, body').animate({
+                    scrollTop: $(div).offset().top
+                }, 'slow');
+                return false;
+            }, 500);
+        }
+    </script>
+
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+
+        var ctx2 = document.getElementById('myChart2').getContext('2d');
+
+        var ctx3 = document.getElementById('myChart3').getContext('2d');
+
+        var myChart2 = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['Node1', 'Node2', 'Node3'],
+                datasets: [{
+                    label: 'Packet Drops per Node',
+
+                    data: [60412, 24193, 4140],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(25, 51, 0, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(25, 51, 0, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        var myPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Transmitted Packets', 'Packet Loss'],
+                datasets: [{
+                    data: [11255, 88745],
+                    backgroundColor: [
+                        'rgba(41, 121, 255, 1)',
+                        'rgba(38, 198, 218, 1)',
+                        'rgba(138, 178, 248, 1)',
+                        'rgba(255, 100, 200, 1)',
+                        'rgba(116, 96, 238, 1)',
+                        'rgba(215, 119, 74, 1)',
+                        'rgba(173, 92, 210, 1)',
+                        'rgba(255, 159, 64, 1)',
+                        'rgba(247, 247, 247, 1)',
+                        'rgba(227, 247, 227, 1)'
+                    ]
+                }],
+            },
+
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                cutoutPercentage: 0,
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            return data['labels'][tooltipItem['index']] + ': ' + data['datasets'][0]['data'][tooltipItem['index']] + '%';
+                        }
+                    }
+                }
+            }
+        });
+
+        var myChart3 = new Chart(ctx3, {
+            type: 'bar',
+            data: {
+                labels: ['Node1', 'Node2', 'Node3'],
+                datasets: [{
+                    label: 'Throughput of Nodes (bits/sec)',
+
+                    data: [1.0010253057388019, 3.168508802114009, 1.2302932909481474],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.6)',
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(25, 51, 0, 0.6)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(25, 51, 0, 1)',
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
     </script>
 </html>

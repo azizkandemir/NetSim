@@ -7,87 +7,209 @@
                 <h1 class="heading">
                     <span class="c1795"><b>Packet Generator</b></span>
                 </h1>
-                <div class="row" id="inner-row-pg-1">
-                    <div class="col">
-                        <form class="form">
+                <div class="row" id="inner-row-pg-1" selector="1">
+                    <form id="pg-form-1" class="formPg" action="" >
+                        <div class="col">
                             <label class="label">Name</label>
                             <div class="form-group">
-                                <input placeholder="Type here pg's name..." class="input"/>
+                                <input placeholder="Type here pg name..." id="pg-nameInput-1" class="input"/>
                             </div>
-                        </form>
-                    </div>
-                    <div class="col">
-                        <form class="form">
+                        </div>
+                        <div class="col">
                             <label class="label">Packets to Create</label>
                             <div class="form-group">
-                                <input placeholder="Enter Packet Number..." class="input"/>
+                                <input placeholder="Enter Packet Number..." id="pg-packetInput-1" class="input"/>
                             </div>
-                        </form>
-                    </div>
-                    <div class="col">
-                        <form class="form">
+                        </div>
+                        <div class="col">
                             <label class="label">Arrival Rate</label>
                             <div class="form-group">
-                                <select id="arrival-rate-combobox" class="Select-ArrivalRate" onchange="onChange(this, this.nextElementSibling.id)">
+                                <select id="arrival-rate-combobox-1" class="Select-ArrivalRate" onchange="onChange(this, this.nextElementSibling.id)">
                                     <option value="0">- Select option -</option>
-                                    <option value="1">Poisson</option>
-                                    <option value="2">Exponential</option>
+                                    <option value="Poisson">Poisson</option>
+                                    <option value="Exponential">Exponential</option>
+                                    <option value="Uniform">Uniform</option>
+
                                 </select>
-                                <input id="arrival-rate-input1" type="text" name="other" class="input arrivalRate" style="display: None; width: 50px">
+                                <input id="arrival-rate-input-1" type="text" name="other" class="input arrivalRate" style="display: None; width: 50px">
+                                <input placeholder="max" id="arrival-max-rate-input-1" type="text" name="other" class="input arrivalRate" style="display: None; width: 50px">
+
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div class="col">
+                            <label class="label">Packet Size</label>
+                            <div class="form-group">
+                                <select id="packet-size-combobox-1" class="Select-PacketSize" onchange="onChange(this, this.nextElementSibling.id)">
+                                    <option value="0">- Select option -</option>
+                                    <option value="Uniform">Uniform</option>
+                                    <option value="Pareto">Pareto</option>
+                                    <option value="Log-Normal">Log-Normal</option>
+                                </select>
+                                <input id="packet-size-input-1" type="text" name="other" class="input packetSize" style="display: None; width: 50px">
+                                <input placeholder="max" id="packet-max-size-input-1" type="text" name="other" class="input packetSize" style="display: None; width: 50px">
+                            </div>
+                        </div>
+
+                        <div class="col" style="top: 30px; left: 17px">
+                            <button class="deleteRow" onclick="deletePgRowOnClick(this)"><i class="fa fa-trash"></i></button>
+{#                            <button type="submit" class="addRow" formmethod="post"><i class="fa fa-plus"> Add </i> </button>#}
+                        </div>
+                    </form>
+
                 </div>
                 </div>
                 <div class="row">
                     <div class="col" id="addPg">
-                        <button onclick="addPg()" class="button" id="addPg">Add Packet Generator</button>
+                        <button form="pg-form-1" id="addPgForm" type="submit" class="addRow" formmethod="post"><i class="fa fa-plus"> Add Packet Generator</i> </button>
                     </div>
                 </div>
-
-
-
-
 
                 <div class="row main-row" id="main-row-node">
                 <h1 class="heading">
                   <span class="c1795"><b>Node</b></span>
                 </h1>
-                <div class="row" id="inner-row-node-1">
-                  <div class="col">
-                    <form class="form">
-                        <label class="label">Name</label>
-                        <div class="form-group">
-                            <input placeholder="Type here node's name..." class="input"/>
+                <div class="row" id="inner-row-node-1" selector="1">
+                    <form id="node-form-1" class="formNode" action="" >
+                        <div class="col">
+                            <label class="label">Name</label>
+                            <div class="form-group">
+                                <input placeholder="Type here node's name..." id="node-nameInput-1" class="input"/>
+                            </div>
                         </div>
-                    </form>
-                  </div>
-                  <div class="col">
-                        <form class="form">
+                        <div class="col">
                             <label class="label">Buffer Size</label>
                             <div class="form-group">
-                                <input placeholder="Enter Buffer Size..." class="input"/>
+                                <input placeholder="Enter Buffer Size..." id="node-bufferInput-1" class="input"/>
                             </div>
-                        </form>
-                  </div>
-                    <div class="col">
-                        <form class="form">
+
+                        </div>
+                        <div class="col">
                             <label class="label">Transmission Rate</label>
                             <div class="form-group">
-                                <input placeholder="Enter Transmission Rate..." id="transmission-rate-input" type="text" name="other" class="input transmissionRate"">
+                                <input placeholder="Enter Transmission Rate..." id="transmission-rate-input-1" type="text" name="other" class="input transmissionRate">
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="col">
+                            <label class="label">Source</label>
+                            <div class="form-group">
+                                <select id="select-node-source-1" class="selectComponent">
+                                    <option value="0" >- Select Source -</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col" style="top: 30px">
+                            <button class="deleteRow" onclick="deleteNodeRowOnClick(this)"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </form>
                 </div>
                 </div>
 
                 <div class="row">
                     <div class="col" id="addNode">
-                        <button onclick="addNode()" class="button" id="addNode">Add Node</button>
+                        <button form="node-form-1" id="addNodeForm" type="submit" class="addRow" formmethod="post"><i class="fa fa-plus"> Add Node</i> </button>
                     </div>
                 </div>
 
+                <div class="row main-row" id="main-row-monitor">
+                <h1 class="heading">
+                  <span class="c1795"><b>Monitor</b></span>
+                </h1>
+                <div class="row" id="inner-row-monitor-1" selector="1">
+                    <form id="monitor-form-1" class="formMonitor" action="" >
+                        <div class="col monitor-col">
+                            <label class="label">Name</label>
+                            <div class="form-group">
+                                <input placeholder="Type here monitor's name..." id="monitor-nameInput-1" class="input"/>
+                            </div>
+                        </div>
+                        <div class="col monitor-col">
+                            <label class="label">Component to Monitor</label>
+                            <div class="form-group">
+                                <select id="select-component-combobox-1" class="selectComponent">
+                                    <option value="0" >- Select Component -</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col monitor-col">
+                            <label class="label">Record Arrival</label>
+                            <div class="form-group">
+                            <label class="switch">
+                                <input type="checkbox" id="arrival-record-1" class="togBtn" value="False">
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                            </div>
+                        </div>
+                        <div class="col monitor-col">
+                            <label class="label">Record Packet Waiting</label>
+                            <div class="form-group">
+                            <label class="switch">
+                                <input type="checkbox" id="waiting-record-1" class="togBtn" value="False">
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                            </div>
+                        </div>
+                        <div class="col monitor-col">
+                            <label class="label" style="padding-left: 7px">Debug</label>
+                            <div class="form-group">
+                            <label class="switch">
+                                <input type="checkbox" id="monitor-debug-1" class="togBtn" value="False">
+                                <div class="slider round">
+                                    <span class="on">ON</span>
+                                    <span class="off">OFF</span>
+                                </div>
+                            </label>
+                            </div>
+                        </div>
+                        <div class="col monitor-col" style="top: 30px;">
+                            <button class="deleteRow" onclick="deleteMonitorRowOnClick(this)"><i class="fa fa-trash"></i></button>
+                        </div>
+                    </form>
+
+                </div>
+                </div>
+
+            <div class="row">
+                    <div class="col" id="addMonitor">
+                        <button form="monitor-form-1" id="addMonitorForm" type="submit" class="addRow" formmethod="post"><i class="fa fa-plus"> Add Monitor</i> </button>
+{#                        <button form="pg-form" class="button" id="addPg">Add Packet Generator</button>#}
+                    </div>
             </div>
+            <div class="row">
+                    <div class="col" id="addMonitor" align="right">
+                        <button id="runSim" onclick="runSim()" type="button" class="runSim" formmethod="post"><i class="fa fa-play"> Run Simulation</i> </button>
+                    </div>
+            </div>
+            </div>
+        </section>
+
+        <section class="result-section">
+            <div class="container" id="simulation-result" style="display: none;" >
+                <div class="row">
+                    <div class="col chart-col" style="width: 400px;height: 400px">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                    <div class="col chart-col" style="width: 400px;height: 400px">
+                        <canvas id="myChart2"></canvas>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col" style="width: 100px;height: 100px">
+                        <canvas id="myChart3"></canvas>
+                    </div>
+                    <div class="col"></div>
+
+                </div>
+            </div>
+
         </section>
     </body>
 
