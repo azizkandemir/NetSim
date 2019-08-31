@@ -1,8 +1,6 @@
-# from test import Disposer, PacketGenerator, Node
 from Components import Monitor, PacketGenerator, Node, ComponentMonitor
 import simpy
 import numpy
-import random
 from operator import itemgetter
 
 
@@ -13,7 +11,6 @@ def dist(distribution, dist_rate=None, dist_max=None):
         return numpy.random.exponential(dist_rate)
     elif distribution == "Uniform":
         return numpy.random.uniform(dist_rate, dist_max)
-        # return random.randint(1, 100)
     elif distribution == "Pareto":
         pass
 

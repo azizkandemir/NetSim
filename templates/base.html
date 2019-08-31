@@ -368,6 +368,7 @@
                 }).done(function (data) {
 
                     var objNewDiv = document.createElement('div');
+                    console.log(data.msg);
                     objNewDiv.innerHTML = '<div class="row"> </div> <div class="col"> <p> '+ data.nodes[0]['name'] +' </p> </div> </div>';
                     $("#simulation-result").append(objNewDiv);
 
@@ -375,7 +376,7 @@
 
 
             {#$("#result-section").show();#}
-            $("#simulation-result").show();
+            $("#simulation-result-section").show();
             scrollTo('#simulation-result');
 
         }
