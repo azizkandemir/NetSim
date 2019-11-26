@@ -1,8 +1,6 @@
-# from test import Disposer, PacketGenerator, Node
 from Components import Monitor, PacketGenerator, Node, ComponentMonitor
 import simpy
 import numpy
-import random
 from operator import itemgetter
 
 
@@ -13,9 +11,10 @@ def dist(distribution, dist_rate=None, dist_max=None):
         return numpy.random.exponential(dist_rate)
     elif distribution == "Uniform":
         return numpy.random.uniform(dist_rate, dist_max)
-        # return random.randint(1, 100)
     elif distribution == "Pareto":
-        pass
+        return numpy.random.pareto(dist_rate)
+    elif distribution == "Log-Normal":
+        return numpy.random.lognormal(dist_rate)
 
 
 def run(values):
@@ -142,7 +141,7 @@ def test(values):
     for comp in big_list:
         if comp['componentType'] == "packetGenerator":
             pgName = comp['name']
-            packetCreation = comp['packetNum']
+            packetCreation = int(comp['packetNum'])
             arrivalType = comp['arrivalType']
             arrivalRate = comp['arrivalRate']
             arrivalRateMax = comp['arrivalRateMax']
@@ -202,11 +201,8 @@ def test(values):
             # print(node_dict[node_dict[node].source].name + "'s out is --> " + node_dict[node_dict[node].source].out.name)
 
     systemMonitor = Monitor(env)
-
     node_dict[node_list[-1]['name']].out = systemMonitor
-
     env.run()
-    print("Sim finished.")
 
     for monitor in monitor_list:
 
@@ -224,9 +220,41 @@ def test(values):
         recordArrival = monitor['recordArrival']
         recordWaiting = monitor['recordWaiting']
         debug = monitor['debug']
-
         monitor_dict["{}".format(monitorName)] = ComponentMonitor(env, component_pg=pgToMonitor, component_node=nodeToMonitor, debug=debug, rec_waits=recordWaiting, rec_arrivals=recordArrival)
 
-    systemMonitor.results()
+    print("Sim finished.")
 
-    return node_list
+    monitor_results = systemMonitor.results()
+
+    for key, value in monitor_dict.items():
+        print(monitor_dict[key].results)
+    return_dict = {}
+
+    return_dict['system_monitor'] = monitor_results
+
+    for node in node_list:
+        node_item = node_dict[node['name']]
+
+        if not return_dict.get('nodes', None):
+            return_dict['nodes'] = []
+
+        return_dict['nodes'].append({
+            'name': node_item.name,
+            'packet_received': node_item.packet_received,
+            'packet_dropped': node_item.packet_dropped,
+            'packet_transmitted': node_item.packet_received - node_item.packet_dropped,
+            'busy_time': round(node_item.busy_time, 4),
+            'throughput': round((node_item.packet_received / node_item.busy_time), 4)
+        })
+
+    for pg in pg_list:
+        pg_item = pg_dict[pg['name']]
+        if not return_dict.get('packet_generators', None):
+            return_dict['packet_generators'] = []
+        return_dict['packet_generators'].append({
+            'name': pg_item.name,
+            'packet_num': pg_item.packet_num,
+        })
+
+    print(return_dict)
+    return return_dict
