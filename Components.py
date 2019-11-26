@@ -70,11 +70,9 @@ class ComponentMonitor:
 
     def results(self):
         if self.nodeToMonitor:
-            print("Received Packets: " + str(self.nodeToMonitor.packet_received) + " Dropped Packets: " + str(self.nodeToMonitor.packet_dropped) + " Node: " + self.nodeToMonitor.name)
-            print(self.nodeToMonitor.name, " Throughput: ", self.throughput(), "bytes/sec")
-            print(self.nodeToMonitor.name, " Throughput: ", self.throughput()*8, "bits/sec")
+            return "Received Packets: " + str(self.nodeToMonitor.packet_received) + " Dropped Packets: " + str(self.nodeToMonitor.packet_dropped) + " Node: " + self.nodeToMonitor.name + self.nodeToMonitor.name, " Throughput: ", self.throughput(), "bytes/sec" + self.nodeToMonitor.name, " Throughput: ", self.throughput()*8, "bits/sec"
         elif self.pgToMonitor:
-            print("Created Packets: " + str(self.pgToMonitor.packet_num) + " Packet Generator: " + self.pgToMonitor.name)
+            return "Created Packets: " + str(self.pgToMonitor.packet_num) + " Packet Generator: " + self.pgToMonitor.name
 
 
 class Monitor:
@@ -118,15 +116,20 @@ class Monitor:
             return self.received_size / self.last_arrival
 
     def results(self):
+        monitor_results = {}
         if self.rec_arrivals:
+            monitor_results['packets_received'] = len(self.arrivals)
             print("Packets Received: ", len(self.arrivals))
+            monitor_results['packets_dropped'] = total_packets - len(self.arrivals)
             print("Packets Dropped: ", total_packets - len(self.arrivals))
         if self.rec_waits:
+            monitor_results['mean_waiting_time'] = sum(self.waits)/len(self.waits)
             print("Mean Waiting Time: ", sum(self.waits)/len(self.waits))
 
+        monitor_results['system_throughput_byte_sec'] = self.throughput()
         print("System Throughput: ", self.throughput(), "byte/sec")
         print("System Throughput: ", self.throughput()*8, "bit/sec")
-
+        return monitor_results
 
 class Node:
     def __init__(self, env, name, buffer_size, t_rate, source=None, debug=False):
