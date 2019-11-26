@@ -366,19 +366,14 @@
                     type : 'POST',
                     url : '/run-sim'
                 }).done(function (data) {
-
-                    var objNewDiv = document.createElement('div');
-                    console.log(data.msg);
-                    objNewDiv.innerHTML = '<div class="row"> </div> <div class="col"> <p> '+ data.nodes[0]['name'] +' </p> </div> </div>';
-                    $("#simulation-result").append(objNewDiv);
+                    initialize_system_results(data);
+                    initialize_graph(data);
+                    initialize_results_table(data);
+                    $("#simulation-result-section").show();
+                    scrollTo('#simulation-result');
 
             });
-
-
             {#$("#result-section").show();#}
-            $("#simulation-result-section").show();
-            scrollTo('#simulation-result');
-
         }
     </script>
 
@@ -392,118 +387,253 @@
             }, 500);
         }
     </script>
-
     <script>
-        var ctx = document.getElementById('myChart').getContext('2d');
+        function initialize_system_results(data) {
+            let html = '<table class="table table-hover table-legend"><tbody>';
+            html += '<tr>' +
+                '<td><b></b></td>' +
+                '<td><b>Dropped Packets</b></td>' +
+                '<td><b>Transmitted Packets</b></td>' +
+                '<td><b>Mean Waiting Time(sec)</b></td>' +
+                '<td><b>Throughput(bytes/sec)</b></td>' +
+                '</tr>';
 
-        var ctx2 = document.getElementById('myChart2').getContext('2d');
+            html += '<tr>' +
+                    '<td><b>System</b></td>' +
+                    '<td>' + data.system_monitor['packets_dropped'] + '</td>' +
+                    '<td>' + data.system_monitor['packets_received'] + '</td>' +
+                    '<td>' + data.system_monitor['mean_waiting_time'] + '</td>' +
+                    '<td>' + data.system_monitor['system_throughput_byte_sec'] + '</td>' +
+                    '</tr>';
 
-        var ctx3 = document.getElementById('myChart3').getContext('2d');
+            html += '</tbody></table>';
+            let system_results_table_div = document.createElement('div');
+            system_results_table_div.style.paddingBottom = '40px';
+            system_results_table_div.style.paddingTop = '60px';
+            system_results_table_div.innerHTML = html;
+            $("#simulation-result").prepend(system_results_table_div);
+        }
 
-        var myChart2 = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: ['Node1', 'Node2', 'Node3'],
-                datasets: [{
-                    label: 'Packet Drops per Node',
-
-                    data: [60412, 24193, 4140],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(25, 51, 0, 0.6)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(25, 51, 0, 1)',
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
+    </script>
+    <script>
+        function initialize_graph(data) {
+            let node_count = data.nodes.length;
+            let nodes_labels = [];
+            let packet_drops_data = [];
+            let nodes_throughputs = [];
+            let system_dropped_transmitted_packets = [data.system_monitor['packets_dropped'], data.system_monitor['packets_received']];
+            let tmp_node= "";
+            for (let i=0; i<node_count; i++) {
+                tmp_node = data.nodes[i];
+                nodes_labels.push(tmp_node['name']);
+                packet_drops_data.push(tmp_node['packet_dropped']);
+                nodes_throughputs.push(tmp_node['throughput']*8);
             }
-        });
 
-        var myPieChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Transmitted Packets', 'Packet Loss'],
-                datasets: [{
-                    data: [11255, 88745],
-                    backgroundColor: [
-                        'rgba(41, 121, 255, 1)',
-                        'rgba(38, 198, 218, 1)',
-                        'rgba(138, 178, 248, 1)',
-                        'rgba(255, 100, 200, 1)',
-                        'rgba(116, 96, 238, 1)',
-                        'rgba(215, 119, 74, 1)',
-                        'rgba(173, 92, 210, 1)',
-                        'rgba(255, 159, 64, 1)',
-                        'rgba(247, 247, 247, 1)',
-                        'rgba(227, 247, 227, 1)'
-                    ]
-                }],
-            },
+            var ctx = document.getElementById('pie_chart').getContext('2d');
 
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                cutoutPercentage: 0,
-                tooltips: {
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            return data['labels'][tooltipItem['index']] + ': ' + data['datasets'][0]['data'][tooltipItem['index']] + '%';
-                        }
+            var ctx2 = document.getElementById('myChart2').getContext('2d');
+
+            var ctx3 = document.getElementById('myChart3').getContext('2d');
+
+
+            var myChart2 = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: nodes_labels,
+                    datasets: [{
+                        data: packet_drops_data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(25, 51, 0, 0.6)',
+                            'rgba(138, 178, 248, 1)',
+                            'rgba(255, 100, 200, 1)',
+                            'rgba(116, 96, 238, 1)',
+                            'rgba(215, 119, 74, 1)',
+                            'rgba(173, 92, 210, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(247, 247, 247, 1)',
+                            'rgba(227, 247, 227, 1)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(25, 51, 0, 1)',
+                            'rgba(138, 178, 248, 1)',
+                            'rgba(255, 100, 200, 1)',
+                            'rgba(116, 96, 238, 1)',
+                            'rgba(215, 119, 74, 1)',
+                            'rgba(173, 92, 210, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(247, 247, 247, 1)',
+                            'rgba(227, 247, 227, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Dropped Packet Count per Node'
+                    },
+                    legend: {
+                        display: false
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true,
+
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
                     }
                 }
-            }
-        });
+            });
 
-        var myChart3 = new Chart(ctx3, {
-            type: 'bar',
-            data: {
-                labels: ['Node1', 'Node2', 'Node3'],
-                datasets: [{
-                    label: 'Throughput of Nodes (bits/sec)',
+            const pie_chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Packet Loss', 'Transmitted Packets'],
+                    datasets: [{
+                        data: system_dropped_transmitted_packets,
+                        backgroundColor: [
+                            'rgba(41, 121, 255, 1)',
+                            'rgba(38, 198, 218, 1)',
+                        ]
+                    }],
+                },
 
-                    data: [1.0010253057388019, 3.168508802114009, 1.2302932909481474],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(25, 51, 0, 0.6)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(25, 51, 0, 1)',
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
+                options: {
+                    title: {
+                        display: true,
+                        text: 'System Packet Dropped/Transmitted'
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    cutoutPercentage: 0,
+                    legend: {
+                        display: false
+                    },
+                    legendCallback: function (chart) {
+                                let html = '<table class="table table-hover table-legend"><tbody>';
+                                const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                for (let i = 0; i < chart.data.datasets[0].data.length; i++) {
+                                    const percentage = ((chart.data.datasets[0].data[i] / total) * 100).toFixed(1);
+                                    html += '<tr>' +
+                                        '<td><i class="fa fa-square" style="color:' + chart.data.datasets[0].backgroundColor[i] + ';"></i></td>' +
+                                        '<td>' + chart.data.labels[i] + '</td>' +
+                                        '<td>' + chart.data.datasets[0].data[i] + '</td>' +
+                                        '<td>(' + percentage + ')%</td>' +
+                                        '</tr>';
+                                }
+                                html += '</tbody></table>';
+                                return html;
+                            }
                 }
-            }
-        });
+            });
 
+            $( "<div id='pie_chart_legend_container' class='legend-container'></div>" ).insertAfter( "#pie_chart" );
+
+            $("#pie_chart_legend_container").html(pie_chart.generateLegend());
+
+            $("#pie_chart_legend_container").on('click', "tr", function () {
+                    if ($(this).hasClass('remove-line')) {
+                        $(this).removeClass('remove-line');
+                        pie_chart.data.datasets[0].data[$(this).index()] = $(this).find('td:eq(2)').text();
+                    } else {
+                        $(this).addClass('remove-line');
+                        pie_chart.data.datasets[0].data[$(this).index()] = 0;
+                    }
+
+                    pie_chart.update();
+                });
+
+            var myChart3 = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: nodes_labels,
+                    datasets: [{
+                        data: nodes_throughputs,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.6)',
+                            'rgba(54, 162, 235, 0.6)',
+                            'rgba(25, 51, 0, 0.6)',
+                            'rgba(138, 178, 248, 1)',
+                            'rgba(255, 100, 200, 1)',
+                            'rgba(116, 96, 238, 1)',
+                            'rgba(215, 119, 74, 1)',
+                            'rgba(173, 92, 210, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(247, 247, 247, 1)',
+                            'rgba(227, 247, 227, 1)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(25, 51, 0, 1)',
+                            'rgba(138, 178, 248, 1)',
+                            'rgba(255, 100, 200, 1)',
+                            'rgba(116, 96, 238, 1)',
+                            'rgba(215, 119, 74, 1)',
+                            'rgba(173, 92, 210, 1)',
+                            'rgba(255, 159, 64, 1)',
+                            'rgba(247, 247, 247, 1)',
+                            'rgba(227, 247, 227, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Throughput of Nodes (bits/sec)'
+                    },
+                    legend: {
+                        display: false
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true,
+
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
+    </script>
+    <script>
+        function initialize_results_table(data) {
+            let html = '<table class="table table-hover table-legend"><tbody>';
+            html += '<tr>' +
+                '<td><b>Name</b></td>' +
+                '<td><b>Dropped</b></td>' +
+                '<td><b>Transmitted</b></td>' +
+                '<td><b>Busy Time(sec)</b></td>' +
+                '<td><b>Throughput(bytes/sec)</b></td>' +
+                '</tr>';
+
+            for (let i=0; i<data.nodes.length; i++) {
+                html += '<tr>' +
+                    '<td>' + data.nodes[i]['name'] + '</td>' +
+                    '<td>' + data.nodes[i]['packet_dropped'] + '</td>' +
+                    '<td>' + data.nodes[i]['packet_transmitted'] + '</td>' +
+                    '<td>' + data.nodes[i]['busy_time'] + '</td>' +
+                    '<td>' + data.nodes[i]['throughput'] + '</td>' +
+                    '</tr>'
+            }
+            html += '</tbody></table>';
+            let results_table_div = document.createElement('div');
+            results_table_div.style.paddingBottom = '40px';
+            results_table_div.style.paddingTop = '60px';
+            results_table_div.innerHTML = html;
+            $("#simulation-result").append(results_table_div);
+        }
     </script>
 </html>

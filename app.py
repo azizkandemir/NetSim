@@ -11,10 +11,18 @@ values = {'packetGenerator': [],
 
 @app.route('/run-sim', methods=['POST'])
 def runSim():
-    node_list = RunSim.test(values)
+    return_dict = RunSim.test(values)
+    for key in values.keys():
+        values[key] = []
+    return_dict['system_monitor']['mean_waiting_time'] = round(return_dict['system_monitor']['mean_waiting_time'], 4)
+    throughput_integer = str(int(return_dict['system_monitor']['system_throughput_byte_sec']))
+    throughput_float = str(return_dict['system_monitor']['system_throughput_byte_sec']).split(".")[-1][:4]
+    return_dict['system_monitor']['system_throughput_byte_sec'] = float(".".join(i for i in [throughput_integer, throughput_float]))
 
     return jsonify({'msg': 'Succeed!',
-                    'nodes': node_list})
+                    'nodes': return_dict['nodes'],
+                    'packet_generators': return_dict['packet_generators'],
+                    'system_monitor': return_dict['system_monitor']})
 
 
 @app.route('/info', methods=['POST'])
@@ -94,7 +102,7 @@ def home():
                                                       'packetNum': int(packetNum),
                                                       'arrivalType': arrivalType,
                                                       'arrivalRate': int(arrivalRate),
-                                                      'arrivalRateMax': arrivalRateMax,
+                                                      'arrivalRateMax': int(arrivalRateMax),
                                                       'sizeType': sizeType,
                                                       'sizeRate': int(sizeRate),
                                                       'sizeRateMax': None
@@ -109,7 +117,7 @@ def home():
                     values['packetGenerator'].append({'componentType': componentType,
                                                       'name': name,
                                                       'creationOrder': creation_order,
-                                                      'packetNum': packetNum,
+                                                      'packetNum': int(packetNum),
                                                       'arrivalType': arrivalType,
                                                       'arrivalRate': int(arrivalRate),
                                                       'arrivalRateMax': None,
